@@ -56,6 +56,26 @@ public class APIFactory {
         return new BulkAPIImpl(sfConfig);
     }
 
+    /**
+     * Same as forceAPI, but authenticates with an already-obtained OAuth session instead of username/password,
+     * so no login() call is made.
+     */
+    public ForceAPI forceAPIWithSession(String sessionId, String serviceEndpoint, String apiVersion) throws Exception {
+        SFConfig sfConfig = new SFConfig(sessionId, serviceEndpoint);
+        sfConfig.setApiVersion(apiVersion);
+        return new ForceAPIImpl(sfConfig);
+    }
+
+    /**
+     * Same as bulkAPI, but authenticates with an already-obtained OAuth session instead of username/password,
+     * so no login() call is made.
+     */
+    public BulkAPI bulkAPIWithSession(String sessionId, String serviceEndpoint, String apiVersion) throws Exception {
+        SFConfig sfConfig = new SFConfig(sessionId, serviceEndpoint);
+        sfConfig.setApiVersion(apiVersion);
+        return new BulkAPIImpl(sfConfig);
+    }
+
     public ChatterAPI chatterAPI(String username, String password, String loginURL, String apiVersion) throws Exception {
         SFConfig sfConfig = new SFConfig(username, password, loginURL, apiVersion);
         return new ChatterAPIImpl(sfConfig);

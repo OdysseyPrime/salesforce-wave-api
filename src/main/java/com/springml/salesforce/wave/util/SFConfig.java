@@ -23,6 +23,9 @@ public class SFConfig {
     private PartnerConnection partnerConnection;
     private Integer maxRetry = 5;
 
+    private String sessionId;
+    private String serviceEndpoint;
+
     public SFConfig(String username, String password, String loginURL,
             String apiVersion) {
         this(username, password, loginURL, apiVersion, null);
@@ -35,6 +38,11 @@ public class SFConfig {
         this.loginURL = loginURL;
         this.apiVersion = apiVersion;
         this.batchSize = batchSize;
+    }
+
+    public SFConfig(String sessionId, String serviceEndpoint) {
+        this.sessionId = sessionId;
+        this.serviceEndpoint = serviceEndpoint;
     }
 
     public String getUsername() {
@@ -95,13 +103,20 @@ public class SFConfig {
 
     private PartnerConnection createPartnerConnection() throws Exception {
         ConnectorConfig config = new ConnectorConfig();
-        LOG.debug("Connecting SF Partner Connection using " + username);
-        config.setUsername(username);
-        config.setPassword(password);
-        String authEndpoint = getAuthEndpoint(loginURL);
-        LOG.info("loginURL : " + authEndpoint);
-        config.setAuthEndpoint(authEndpoint);
-        config.setServiceEndpoint(authEndpoint);
+
+        if (sessionId != null) {
+            LOG.debug("Connecting SF Partner Connection using an existing session (no login())");
+            config.setSessionId(sessionId);
+            config.setServiceEndpoint(serviceEndpoint);
+        } else {
+            LOG.debug("Connecting SF Partner Connection using " + username);
+            config.setUsername(username);
+            config.setPassword(password);
+            String authEndpoint = getAuthEndpoint(loginURL);
+            LOG.info("loginURL : " + authEndpoint);
+            config.setAuthEndpoint(authEndpoint);
+            config.setServiceEndpoint(authEndpoint);
+        }
 
         try {
             return Connector.newConnection(config);
